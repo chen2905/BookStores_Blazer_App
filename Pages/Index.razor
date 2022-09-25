@@ -1,0 +1,44 @@
+﻿@page "/"
+@using BookStoresService
+@inject IHttpClientFactory HttpClientFactory
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (publishers != null) { 
+    foreach(Publisher publisher in publishers)
+                    {
+                    @publisher.PublisherName
+                    <br/>
+                    }
+
+}
+<button class="btn btn-primary" @onclick="CreatePublisher">Save</button>
+
+@code{        
+    ICollection<Publisher> publishers;
+    BookStoresClient bookStoresClient;
+    protected async override Task OnInitializedAsync()
+        {
+
+
+        bookStoresClient = new BookStoresClient("https://localhost:44340/", HttpClientFactory.CreateClient());
+
+        publishers =await bookStoresClient.GetPublishersAsync();
+
+        //return base.OnInitializedAsync();
+        }
+
+    private async Task CreatePublisher()
+        {
+        Publisher p = new Publisher();
+
+        p.PublisherName = "Dalian Times";
+        p.City = "Dalian";
+        p.State = "MH";
+        await bookStoresClient.CreatePublisherAsync(p);
+        }
+
+}
